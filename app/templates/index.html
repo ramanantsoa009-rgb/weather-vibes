@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weather Vibes</title>
+  <meta name="description" content="La météo de ta ville, avec l'humeur qui va avec.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌈</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="theme-default">
+  <div id="sky" aria-hidden="true"></div>
+  <div id="flash" aria-hidden="true"></div>
+
+  <main>
+    <h1>Weather Vibes</h1>
+    <p class="tagline">La météo de ta ville, avec l'humeur qui va avec </p>
+
+    <form id="search" autocomplete="off">
+      <input id="city" name="city" type="search" placeholder="Paris, Tokyo, Montréal…" maxlength="100" required aria-label="Nom de la ville">
+      <button id="go" type="submit">RECHERCHER</button>
+    </form>
+
+    <div class="chips" aria-label="Suggestions">
+      <button type="button" class="chip" data-city="Paris">Paris</button>
+      <button type="button" class="chip" data-city="Tokyo">Tokyo</button>
+      <button type="button" class="chip" data-city="Reykjavik">Reykjavik</button>
+      <button type="button" class="chip" data-city="Dakar">Dakar</button>
+    </div>
+
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+
+    <section id="card" class="card" hidden aria-live="polite">
+      <h2 class="place"><span id="place"></span><span id="country" class="country" hidden></span></h2>
+
+      <img id="weather-illustration" class="weather-illustration" alt="" width="170" height="170" hidden>
+
+      <p class="temp"><span id="temp"></span><sup>°C</sup></p>
+      <p id="description" class="description"></p>
+
+      <p id="vibe" class="vibe-msg"></p>
+
+      <div class="stats">
+        <div class="stat" id="stat-feels"><span class="icon">🌡️</span><span class="value" id="feels"></span><span class="label">Ressenti</span></div>
+        <div class="stat" id="stat-humidity"><span class="icon">💧</span><span class="value" id="humidity"></span><span class="label">Humidité</span></div>
+        <div class="stat" id="stat-wind"><span class="icon">🍃</span><span class="value" id="wind"></span><span class="label">Vent</span></div>
+      </div>
+    </section>
+
+    <footer>Données : <a href="https://openweathermap.org/" target="_blank" rel="noopener">OpenWeatherMap</a></footer>
+  </main>
+
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

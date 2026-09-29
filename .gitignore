@@ -1,0 +1,17 @@
+# Secrets
+.env
+
+# ignore le contexte claude
+.claude/
+claude/
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# OS / éditeurs
+.DS_Store
+.vscode/
+.idea/
