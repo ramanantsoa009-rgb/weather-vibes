@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-vibes
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: weather-vibes
+  template:
+    metadata:
+      labels:
+        app: weather-vibes
+    spec:
+      containers:
+      - name: weather-vibes
+        image: adriendockeraccount/weather-vibes:v1
+        ports:
+        - containerPort: 8000
+        env:
+        - name: OPENWEATHER_API_KEY
+          valueFrom:                        # ← NOUVEAU : la clé vient d'un Secret !
+            secretKeyRef:
+              name: weather-secret          # le nom du Secret
+              key: openweather-api-key              # la clé dans le Secret
