@@ -58,26 +58,31 @@ docker run -p 8000:8000 --env-file .env weather-vibes
 
 ## Chaîne CI/CD
 
+```mermaid
+flowchart TD
+    dev([git push sur main]) --> run
+
+    subgraph tekton [Tekton - build-pipeline]
+        direction TB
+        run[PipelineRun<br/>lancé avec kubectl create] --> clone[1. clone<br/>récupère le dépôt GitHub]
+        clone --> build[2. build-push<br/>Kaniko construit l'image<br/>taguée avec le hash du commit]
+        build --> update[3. update-manifest<br/>met à jour le tag dans k8s/deployment.yaml]
+    end
+
+    build -- push de l'image --> hub[(Docker Hub<br/>adriendockeraccount/weather-vibes)]
+    update -- commit ci: deploy ... skip ci --> repo[(Dépôt GitHub<br/>dossier k8s/)]
+
+    repo -- surveillé par --> argo[ArgoCD<br/>synchronise le cluster]
+    argo --> cluster[Deployment weather-vibes<br/>2 réplicas, NodePort 30090]
+    hub -. image téléchargée .-> cluster
 ```
- git push (main)
-      |
-      v
- Tekton PipelineRun  (lancé manuellement : kubectl create -f tekton/pipeline-run.yaml)
-      |
-      |-- 1. clone            récupère le dépôt GitHub
-      |-- 2. build-push       Kaniko construit l'image et la pousse sur Docker Hub,
-      |                       taguée avec le hash du commit
-      |-- 3. update-manifest  remplace le tag d'image dans k8s/deployment.yaml
-      |                       et pousse un commit "ci: deploy ... [skip ci]"
-      v
- Dépôt GitHub (dossier k8s/ modifié)
-      |
-      v
- ArgoCD détecte le changement et synchronise le cluster
-      |
-      v
- Deployment weather-vibes (2 réplicas), exposé en NodePort 30090
-```
+
+| Étape               | Rôle                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------ |
+| 1. clone            | Récupère le dépôt GitHub dans un volume partagé                                      |
+| 2. build-push       | Kaniko construit l'image et la pousse sur Docker Hub, taguée avec le hash du commit  |
+| 3. update-manifest  | Remplace le tag d'image dans `k8s/deployment.yaml` et pousse un commit `[skip ci]`   |
+| ArgoCD              | Détecte le changement dans `k8s/` et applique les manifests sur le cluster           |
 
 Le tag d'image est toujours le hash du commit source : on sait exactement quel code tourne dans le cluster.
 
