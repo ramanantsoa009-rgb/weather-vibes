@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: update-manifest
+  namespace: default
+spec:
+  params:
+    - name: image
+      type: string
+    - name: repo-path
+      type: string
+      default: github.com/ramanantsoa009-rgb/weather-vibes.git
+  workspaces:
+    - name: source
+  steps:
+    - name: update-and-push
+      image: alpine/git:latest
+      workingDir: $(workspaces.source.path)
+      env:
+        - name: GIT_USER
+          valueFrom:
+            secretKeyRef:
+              name: github-token
+              key: username
+        - name: GIT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github-token
+              key: token
+      script: |
+        #!/bin/sh
+        set -e
+        git config --global --add safe.directory "$(workspaces.source.path)"
+        git config --global user.name "tekton-ci"
+        git config --global user.email "tekton-ci@users.noreply.github.com"
+
+        git checkout -B main
+
+        sed -i "s|image: .*weather-vibes:.*|image: $(params.image)|" k8s/deployment.yaml
+        grep "image:" k8s/deployment.yaml
+
+        git add k8s/deployment.yaml
+        git commit -m "ci: deploy $(params.image) [skip ci]" || echo "Rien à commiter"
+
+        git remote set-url origin "https://${GIT_USER}:${GIT_TOKEN}@$(params.repo-path)"
+        git push origin main

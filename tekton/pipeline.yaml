@@ -1,0 +1,50 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: build-pipeline
+  namespace: default
+spec:
+  params:
+    - name: repo-url
+      type: string
+    - name: image-repo
+      type: string
+  workspaces:
+    - name: shared-data
+    - name: docker-credentials
+  tasks:
+    - name: clone
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-data
+      params:
+        - name: url
+          value: $(params.repo-url)
+        - name: revision
+          value: main
+    - name: build-push
+      taskRef:
+        name: kaniko
+      runAfter:
+        - clone
+      workspaces:
+        - name: source
+          workspace: shared-data
+        - name: dockerconfig
+          workspace: docker-credentials
+      params:
+        - name: IMAGE
+          value: $(params.image-repo):$(tasks.clone.results.commit)
+    - name: update-manifest
+      taskRef:
+        name: update-manifest
+      runAfter:
+        - build-push
+      workspaces:
+        - name: source
+          workspace: shared-data
+      params:
+        - name: image
+          value: $(params.image-repo):$(tasks.clone.results.commit)

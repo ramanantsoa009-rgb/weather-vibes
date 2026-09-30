@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  generateName: git-clone-run-
+  namespace: default
+spec:
+  taskRef:
+    name: git-clone
+  params:
+    - name: url
+      value: https://github.com/ramanantsoa009-rgb/weather-vibes.git
+    - name: revision
+      value: main
+  workspaces:
+    - name: output
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 500Mi

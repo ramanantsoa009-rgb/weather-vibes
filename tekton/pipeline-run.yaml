@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: build-run-
+  namespace: default
+spec:
+  pipelineRef:
+    name: build-pipeline
+  taskRunTemplate:
+    serviceAccountName: tekton-ci
+  params:
+    - name: repo-url
+      value: https://github.com/ramanantsoa009-rgb/weather-vibes.git
+    - name: image-repo
+      value: adriendockeraccount/weather-vibes
+  workspaces:
+    - name: shared-data
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 500Mi
+    - name: docker-credentials
+      secret:
+        secretName: dockerhub-secret
+        items:
+          - key: .dockerconfigjson
+            path: config.json
