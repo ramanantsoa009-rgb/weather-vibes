@@ -17,6 +17,7 @@ spec:
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
+        runAsGroup: 1000
       containers:
       - name: weather-vibes
         image: adriendockeraccount/weather-vibes:b7686ece73b848d7b57fa1e63f0ab6cda4eba419
