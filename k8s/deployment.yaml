@@ -13,10 +13,10 @@ spec:
       labels:
         app: weather-vibes
     ## Apres audit avec polaris - il faut ajouter la section securityContext pour securiser le container
-    securityContext:
-      runAsNonRoot: true
-      runAsUser: 1000
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
       containers:
       - name: weather-vibes
         image: adriendockeraccount/weather-vibes:b7686ece73b848d7b57fa1e63f0ab6cda4eba419
