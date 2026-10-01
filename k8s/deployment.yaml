@@ -12,6 +12,10 @@ spec:
     metadata:
       labels:
         app: weather-vibes
+    ## Apres audit avec polaris - il faut ajouter la section securityContext pour securiser le container
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
     spec:
       containers:
       - name: weather-vibes
@@ -24,3 +28,6 @@ spec:
             secretKeyRef:
               name: weather-secret          # le nom du Secret
               key: openweather-api-key              # la clé dans le Secret
+        ## Apres audit avec polaris - il faut ajouter la section securityContext pour securiser le container
+        securityContext:
+          allowPrivilegeEscalation: false
